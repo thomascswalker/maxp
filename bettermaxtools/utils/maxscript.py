@@ -3,7 +3,7 @@ from typing import List
 from collections import namedtuple
 
 # 3ds Max
-from pymxs import runtime as rt
+from . import rt
 
 NodeInfo = namedtuple("NodeInfo", ["reference", "name", "material"])
 

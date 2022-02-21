@@ -1,9 +1,8 @@
 # Standard
 import os
-from typing import Optional
+from typing import List
 
 # Qt
-from PySide2.QtCore import QEvent
 from PySide2.QtWidgets import QFileDialog
 
 # Package
@@ -12,22 +11,28 @@ from widgets.autowindow import AutoWindow
 
 
 class GameExporterWindow(AutoWindow):
-    _modelQueue = []
+    _modelQueue: List = []
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent, title='Game Exporter', uiFile='gameexporter')
+        super().__init__('Game Exporter', parent=parent, uiFile='gameexporter')
         self.setup_connections()
         self.populate_models_list()
 
-    def setup_connections(self):
+    def setup_connections(self) -> None:
         self.ui.exportSelected.toggled.connect(self.on_export_selected_checked)
         self.ui.exploreOutput.clicked.connect(self.on_explore_output_clicked)
         self.ui.exportModels.clicked.connect(self.export_models)
 
-    def add_callbacks(self):
-        maxscript.add_callback('selectionSetChanged', self.populate_models_list, 'GameExporter')
+    def add_callbacks(self) -> None:
+        super().add_callbacks()
+        maxscript.add_callback(
+            'selectionSetChanged',
+            self.populate_models_list,
+            'GameExporter'
+        )
 
-    def delete_callbacks(self):
+    def delete_callbacks(self) -> None:
+        super().delete_callbacks()
         maxscript.remove_callback('selectionSetChanged', 'GameExporter')
 
     def on_explore_output_clicked(self):
@@ -65,15 +70,3 @@ class GameExporterWindow(AutoWindow):
             name = model.name
             filename = os.path.join(path, prefix + name + ".fbx")
             maxscript.export_model(obj, filename, origin=origin, upAxis=upAxis)
-
-    # Qt Override
-    def showEvent(self, event: QEvent) -> None:
-        self.add_callbacks()
-        self.read_settings()
-        super().showEvent(event)
-
-    # Qt Override
-    def closeEvent(self, event: QEvent) -> None:
-        self.delete_callbacks()
-        self.write_settings()
-        super().closeEvent(event)

@@ -1,18 +1,13 @@
+# Standard
 import sys
-import os
 import importlib
 
+# Qt
 from PySide2.QtWidgets import QApplication
 
-sys.path.append(os.path.dirname(__file__))
-
-try:
-    import pymxs
-    import qtmax
-    maxhwnd = qtmax.GetQMaxMainWindow()
-except ImportError:
-    pymxs = None
-    maxhwnd = None
+# Package
+from . import rt
+from . import maxhwnd
 
 
 def launch(moduleName: str, windowName: str) -> None:
@@ -26,13 +21,13 @@ def launch(moduleName: str, windowName: str) -> None:
     importlib.reload(module)
     windowClass = getattr(module, windowName)
 
-    if pymxs is None:
+    if rt is None:
         app = QApplication(sys.argv)
 
     w = windowClass(parent=maxhwnd)
     w.show()
 
-    if pymxs is None:
+    if rt is None:
         sys.exit(app.exec_())
 
 
