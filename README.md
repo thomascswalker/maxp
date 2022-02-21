@@ -1,1 +1,1 @@
-# bettergameexporter
+# Better Max Tools
