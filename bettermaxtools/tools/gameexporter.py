@@ -6,8 +6,8 @@ from typing import List
 from PySide2.QtWidgets import QFileDialog
 
 # Package
-from utils import maxscript
-from widgets.autowindow import AutoWindow
+from bettermaxtools.utils import maxscript
+from bettermaxtools.widgets.autowindow import AutoWindow
 
 
 class GameExporterWindow(AutoWindow):

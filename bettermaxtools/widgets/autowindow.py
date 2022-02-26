@@ -9,7 +9,8 @@ from PySide2.QtCore import QFile, QSettings, QEvent, QSize
 from PySide2.QtUiTools import QUiLoader
 
 # Package
-from utils import files
+from bettermaxtools.utils import files
+
 
 
 class AutoWindow(QMainWindow):

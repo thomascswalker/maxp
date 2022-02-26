@@ -1,4 +1,5 @@
 # Standard
+import os
 import sys
 import importlib
 
@@ -6,8 +7,8 @@ import importlib
 from PySide2.QtWidgets import QApplication
 
 # Package
-from . import rt
-from . import maxhwnd
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from bettermaxtools import maxhwnd  # noqa: E402
 
 
 def launch(moduleName: str, windowName: str) -> None:
@@ -17,17 +18,17 @@ def launch(moduleName: str, windowName: str) -> None:
         moduleName (str): The name of the module to access.
         windowName (str): The name of the window class to launch.
     """
-    module = importlib.import_module(f'tools.{moduleName}')
+    module = importlib.import_module(f'bettermaxtools.tools.{moduleName}')
     importlib.reload(module)
     windowClass = getattr(module, windowName)
 
-    if rt is None:
+    if maxhwnd is None:
         app = QApplication(sys.argv)
 
     w = windowClass(parent=maxhwnd)
     w.show()
 
-    if rt is None:
+    if maxhwnd is None:
         sys.exit(app.exec_())
 
 

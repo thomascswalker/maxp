@@ -5,6 +5,6 @@ try:
     from pymxs import runtime as rt
     import qtmax
     maxhwnd = qtmax.GetQMaxMainWindow()
-except ModuleNotFoundError:
+except (ImportError, ModuleNotFoundError):
     rt = None
     maxhwnd = None
