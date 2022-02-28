@@ -12,8 +12,14 @@ from PySide2.QtUiTools import QUiLoader
 from bettermaxtools.utils import files
 
 
-
 class AutoWindow(QMainWindow):
+    """Window with convenience features already setup.
+    
+    - Auto-load/save widget properties
+    - Load .ui file
+    - Kill instances of this window upon launch (ensuring
+    only one instance of this window exists)
+    """
     _uniqueName: str
 
     def __init__(

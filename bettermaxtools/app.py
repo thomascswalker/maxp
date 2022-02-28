@@ -7,7 +7,6 @@ import importlib
 from PySide2.QtWidgets import QApplication
 
 # Package
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from bettermaxtools import maxhwnd  # noqa: E402
 
 

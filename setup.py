@@ -17,7 +17,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "bettermaxtools"},
-    packages=setuptools.find_packages(where="bettermaxtools"),
+    packages=["bettermaxtools"],
     python_requires=">=3.7",
 )
