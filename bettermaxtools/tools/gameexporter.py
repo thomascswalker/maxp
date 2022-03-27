@@ -70,3 +70,7 @@ class GameExporterWindow(AutoWindow):
             name = model.name
             filename = os.path.join(path, prefix + name + ".fbx")
             maxscript.export_model(obj, filename, origin=origin, upAxis=upAxis)
+
+if __name__ == "__main__":
+    w = GameExporterWindow()
+    w.show()

@@ -1,11 +1,31 @@
 # Standard
-from typing import List
+from typing import Any, List, TypeVar, Union
 from collections import namedtuple
 
 # 3ds Max
 from bettermaxtools import rt
 
+Camera = TypeVar('Camera')
 NodeInfo = namedtuple("NodeInfo", ["reference", "name", "material"])
+
+
+def get_current_selection() -> Union[List, Any]:
+    """Get the current selection in the scene.
+
+    - If one object is selected, returns that object.
+    - If multiple objects are selected, returns a list of those objects.
+    - If no objects are selected, returns None.
+
+    Returns:
+        List, Any: The object(s) that is/are selected
+    """
+    objects = list(rt.GetCurrentSelection())
+    if len(objects) == 1:
+        return objects[0]
+    elif len(objects > 1):
+        return objects
+    else:
+        return None
 
 
 def get_nodes(selected: bool = False) -> List[NodeInfo]:

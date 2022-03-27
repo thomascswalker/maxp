@@ -10,11 +10,12 @@ from PySide2.QtUiTools import QUiLoader
 
 # Package
 from bettermaxtools.utils import files
+from bettermaxtools import maxhwnd
 
 
 class AutoWindow(QMainWindow):
     """Window with convenience features already setup.
-    
+
     - Auto-load/save widget properties
     - Load .ui file
     - Kill instances of this window upon launch (ensuring
@@ -29,7 +30,7 @@ class AutoWindow(QMainWindow):
         uiFile: str = "",
         unique: bool = True
     ) -> None:
-        super().__init__(parent)
+        super().__init__(maxhwnd)
         self.setWindowTitle(title)
         self._uniqueName = self.__class__.__name__
         self.setObjectName(self._uniqueName)
