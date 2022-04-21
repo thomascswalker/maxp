@@ -16,6 +16,8 @@ from PySide2.QtWidgets import (
     QFrame,
     QComboBox,
     QWidget,
+    QSpacerItem,
+    QSizePolicy,
 )
 
 GITHUB = r"https://github.com/thomascswalker/better-max-tools"
@@ -45,7 +47,9 @@ class InstallerWindow(QMainWindow):
 
     def setupUi(self) -> None:
         centralWidget = QFrame()
-        layout = QHBoxLayout()
+
+        pathLayout = QHBoxLayout()
+        mainLayout = QVBoxLayout()
 
         self._maxVersionList = QComboBox()
         for version in get_max_installs():
@@ -54,12 +58,45 @@ class InstallerWindow(QMainWindow):
 
         self._maxVersionExplore = QToolButton()
         self._maxVersionExplore.setText("Explore..")
-        self._maxVersionExplore.clicked.connect(self.install)
+        self._maxVersionExplore.clicked.connect(self.exploreMaxVersion)
 
-        layout.addWidget(self._maxVersionList)
-        layout.addWidget(self._maxVersionExplore)
+        pathLayout.addWidget(self._maxVersionList)
+        pathLayout.addWidget(self._maxVersionExplore)
 
-        centralWidget.setLayout(layout)
+        pathGroup = QWidget()
+        pathGroup.setLayout(pathLayout)
+        mainLayout.addWidget(pathGroup)
+
+        installLayout = QHBoxLayout()
+        self._install = QPushButton("Install")
+        self._install.setFixedSize(120, 40)
+        self._install.clicked.connect(self.install)
+
+        qss = """QPushButton {
+            background-color: #0091EA;
+            color: #FFFFFF;
+            border-style: none;
+            border-width: 0px;
+            border-radius: 0px;
+            font-size: 14pt;
+            font-style: normal;
+            font-family: Segoe UI Semilight;
+            padding: 6px;
+        }
+        
+        QPushButton:hover {
+            background-color: #00B0FF;    
+        }"""
+        self._install.setStyleSheet(qss)
+        installGroup = QWidget()
+        installGroup.setLayout(installLayout)
+        spacer = QSpacerItem(5, 5, hData=QSizePolicy.Expanding)
+        installLayout.addSpacerItem(spacer)
+        installLayout.addWidget(self._install)
+
+        mainLayout.addWidget(installGroup)
+
+        centralWidget.setLayout(mainLayout)
         self.setCentralWidget(centralWidget)
 
     def exploreMaxVersion(self):
@@ -74,12 +111,15 @@ class InstallerWindow(QMainWindow):
             raise FileNotFoundError("Python interpreter not found.")
 
         subprocess.Popen(f"{interpreter} -m ensurepip")
-        subprocess.Popen(f"{interpreter} -m pip install {GITHUB}")
+
+        packages = ["better-max-tools-thomascswalker"]
+        for package in packages:
+            subprocess.Popen(f"{interpreter} -m pip install {package}")
 
 
 def run():
     app = QApplication(sys.argv)
-    app.setStyle("Fusion")
+    # app.setStyle("Fusion")
 
     dialog = InstallerWindow()
     dialog.show()
