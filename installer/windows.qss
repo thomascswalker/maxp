@@ -21,6 +21,8 @@ QAbstractButton {
     border-radius: 0px;
     font-size: 10pt;
     font-style: normal;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 QAbstractButton:hover {
