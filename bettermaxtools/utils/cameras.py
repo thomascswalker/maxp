@@ -44,6 +44,9 @@ def create_icon_camera(obj: Any):
     rt.viewport.setCamera(camera)
 
 
+def set_viewport_camera(camera: maxscript.Camera) -> None:
+    rt.viewport.setCamera(camera)
+
 if __name__ == "__main__":
     obj = maxscript.get_current_selection()
     create_icon_camera(obj)

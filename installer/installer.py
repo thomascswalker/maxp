@@ -3,40 +3,58 @@ import os
 import sys
 import subprocess
 from typing import List, Tuple
-from PySide2.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QPushButton,
-    QLineEdit,
-    QLabel,
-    QToolButton,
-    QHBoxLayout,
-    QVBoxLayout,
-    QFormLayout,
-    QFrame,
-    QComboBox,
-    QWidget,
-    QSpacerItem,
-    QSizePolicy,
-)
+from collections import namedtuple
+
+from PySide2.QtUiTools import QUiLoader
+from PySide2.QtCore import QFile
+from PySide2.QtWidgets import QApplication, QMainWindow
 
 GITHUB = r"https://github.com/thomascswalker/better-max-tools"
 APPLICATION_PLUGINS_PATH = r"C:\ProgramData\Autodesk\ApplicationPlugins"
 AUTODESK_PATH = r"C:\Program Files\Autodesk"
-SITE_PACKAGES = os.path.join(os.getenv("appdata"), "Python\Python37\site-packages")
+SITE_PACKAGES = os.path.join(os.getenv("appdata"), r"Python\Python37\site-packages")
 
+MaxInstall = namedtuple(
+    'MaxInstall',
+    [
+        'directory',
+        'version',
+        'pythonExecutable',
+        'sitePackages'
+    ]
+)
 
 def get_max_installs() -> List[Tuple[str]]:
+
     dirs = glob(AUTODESK_PATH + r"\3ds Max*")
     result = []
+
     for dir in dirs:
         if os.path.exists(os.path.join(dir, "3dsmax.exe")):
             version = dir.split(" ")[-1]
-            result.append((dir, version))
+
+            if version == 2022:
+                pythonExecutable = os.path.join(dir, "Python37\\python.exe")
+                sitePackages = os.path.join(os.getenv("appdata"), "Python\\Python37\\site-packages")
+            elif version == 2023:
+                pythonExecutable = os.path.join(dir, "Python39\\python.exe")
+                sitePackages = os.path.join(os.getenv("appdata"), "Python\\Python39\\site-packages")
+            else:
+                pythonExecutable = os.path.join(dir, "Python\\python.exe")
+                sitePackages = os.path.join(os.getenv("appdata"), "Python\\Python37\\site-packages")
+
+            MaxInstall(dir, version, pythonExecutable, sitePackages)
+            result.append(MaxInstall)
+
     return result
 
 
+def is_package_installed() -> bool:
+    return True
+
+
 class InstallerWindow(QMainWindow):
+    _installations: List[MaxInstall] = get_max_installs()
     _currentVersion: str
     _currentMaxPath: str
 
@@ -44,69 +62,58 @@ class InstallerWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Better Max Tools Installer")
         self.setupUi()
+        self.setupConnections()
+        self.setupStyle()
 
     def setupUi(self) -> None:
-        centralWidget = QFrame()
+        uiFileName = f"{os.path.dirname(__file__)}\\installer.ui"
+        if not os.path.exists(uiFileName):
+            raise FileNotFoundError(".ui file not found!")
 
-        pathLayout = QHBoxLayout()
-        mainLayout = QVBoxLayout()
+        loader = QUiLoader()
+        file = QFile(uiFileName)
+        self._centralWidget = loader.load(file)
+        self.setMaximumSize(self._centralWidget.size())
 
-        self._maxVersionList = QComboBox()
-        for version in get_max_installs():
-            self._maxVersionList.addItem(version[1], version[0])
-        self._maxVersionPath = QLineEdit()
+        self.setCentralWidget(self._centralWidget)
+        for installation in self._installations:
+            print(installation.version)
+            print(installation.directory)
+            item = (f"3ds Max {installation.version}", installation.directory)
+            self._centralWidget.maxVersionList.addItem(*item)
+        self._centralWidget.maxVersionList.addItem('test')
+        self.setInstallPath()
 
-        self._maxVersionExplore = QToolButton()
-        self._maxVersionExplore.setText("Explore..")
-        self._maxVersionExplore.clicked.connect(self.exploreMaxVersion)
+    def setupConnections(self):
+        self._centralWidget.maxVersionExplore.clicked.connect(self.exploreMaxVersion)
 
-        pathLayout.addWidget(self._maxVersionList)
-        pathLayout.addWidget(self._maxVersionExplore)
+        isInstalled = is_package_installed()
+        if not isInstalled:
+            self._centralWidget.uninstall.setEnabled(False)
+            self._centralWidget.install.clicked.connect(self.install)
+        else:
+            self._centralWidget.install.setEnabled(False)
+            self._centralWidget.uninstall.setEnabled(True)
+            self._centralWidget.uninstall.clicked.connect(self.uninstall)
 
-        pathGroup = QWidget()
-        pathGroup.setLayout(pathLayout)
-        mainLayout.addWidget(pathGroup)
+    def setupStyle(self):
+        qssFileName = f"{os.path.dirname(__file__)}\\windows.qss"
+        with open(qssFileName, 'r') as file:
+            qss = "".join(file.readlines())
+        self.setStyleSheet(qss)
 
-        installLayout = QHBoxLayout()
-        self._install = QPushButton("Install")
-        self._install.setFixedSize(120, 40)
-        self._install.clicked.connect(self.install)
-
-        qss = """QPushButton {
-            background-color: #0091EA;
-            color: #FFFFFF;
-            border-style: none;
-            border-width: 0px;
-            border-radius: 0px;
-            font-size: 14pt;
-            font-style: normal;
-            font-family: Segoe UI Semilight;
-            padding: 6px;
-        }
-        
-        QPushButton:hover {
-            background-color: #00B0FF;    
-        }"""
-        self._install.setStyleSheet(qss)
-        installGroup = QWidget()
-        installGroup.setLayout(installLayout)
-        spacer = QSpacerItem(5, 5, hData=QSizePolicy.Expanding)
-        installLayout.addSpacerItem(spacer)
-        installLayout.addWidget(self._install)
-
-        mainLayout.addWidget(installGroup)
-
-        centralWidget.setLayout(mainLayout)
-        self.setCentralWidget(centralWidget)
+    def setInstallPath(self):
+        self._centralWidget.installPath.setText(SITE_PACKAGES)
 
     def exploreMaxVersion(self):
-        path = self._maxVersionList.currentData()
+        path = self._centralWidget.maxVersionList.currentData()
         if os.path.exists(path):
             subprocess.Popen(f'explorer "{path}"')
 
     def install(self):
-        maxPath = self._maxVersionList.currentData()
-        interpreter = os.path.join(maxPath, r"Python37\python.exe")
+        maxPath = self._centralWidget.maxVersionList.currentData()
+        version = "37"
+        interpreter = os.path.join(maxPath, f"Python{version}\\python.exe")
         if not os.path.exists(interpreter):
             raise FileNotFoundError("Python interpreter not found.")
 
@@ -116,10 +123,12 @@ class InstallerWindow(QMainWindow):
         for package in packages:
             subprocess.Popen(f"{interpreter} -m pip install {package}")
 
+    def uninstall(self):
+        pass
+
 
 def run():
     app = QApplication(sys.argv)
-    # app.setStyle("Fusion")
 
     dialog = InstallerWindow()
     dialog.show()
