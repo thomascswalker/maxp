@@ -1,7 +1,0 @@
-site_name: My Docs
-theme: readthedocs
-nav:
-    - Home: index.md
-    - MAXScript: maxscript.md
-plugins:
-  - mkdocs_apidoc
