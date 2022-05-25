@@ -1,15 +1,35 @@
 # Standard
 import abc
 import os
+from typing import Any
 
 # Qt
-from PySide2.QtCore import QEvent, QFile, QPoint, QSettings, QSize
+from PySide2.QtCore import QEvent, QFile, QPoint, QSettings, QSize, Signal, Slot
 from PySide2.QtUiTools import QUiLoader
-from PySide2.QtWidgets import QMainWindow, QWidget
+from PySide2.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QSpinBox
 
 # Internal
 from .. import maxhwnd, rt
-from ..utils import files
+from .. import fileio
+
+
+def bind(signal: Signal, slot: Slot, node: Any, prop: str) -> rt.NodeEventCallback:
+    """Bind a widget to a 3ds Max Node property."""
+
+    def _wexec(value: Any):
+        setattr(node, prop, value)
+
+    def _nexec(event, node):
+        value = getattr(node, prop)
+        slot(value)
+
+    signal.connect(_wexec)
+    callback = rt.NodeEventCallback(propertiesOtherEvent=_nexec)
+    return callback
+
+
+def unbind(callback: rt.NodeEventCallback) -> None:
+    callback = None
 
 
 class AutoWindow(QMainWindow):
@@ -39,7 +59,7 @@ class AutoWindow(QMainWindow):
 
         if uiFile != "":
             loader = QUiLoader()
-            filename = files.relative(rf"..\tools\{uiFile}.ui")
+            filename = fileio.relative(f"..\\tools\\{uiFile}.ui")
 
             if not os.path.exists(filename):
                 raise FileNotFoundError(f"File {filename} not found!")
@@ -54,18 +74,18 @@ class AutoWindow(QMainWindow):
             self.setCentralWidget(self.ui)
 
         if unique:
-            self.close_instances()
+            self.closeInstances()
 
     # Override
     def showEvent(self, event: QEvent) -> None:
-        self.read_settings()
-        self.add_callbacks()
+        self.readSettings()
+        self.addCallbacks()
         super().showEvent(event)
 
     # Override
     def closeEvent(self, event: QEvent) -> None:
-        self.write_settings()
-        self.delete_callbacks()
+        self.writeSettings()
+        self.deleteCallbacks()
         super().closeEvent(event)
 
     def closeInstances(self) -> None:
@@ -79,10 +99,10 @@ class AutoWindow(QMainWindow):
                 dialog.close()
 
     def readSettings(self) -> None:
-        pos = QPoint(self._settings.value("pos", QSize(0, 0)))  # type: ignore
+        pos = self._settings.value("pos", QSize(0, 0))  # type: ignore
         self.move(pos)
 
-        size = QSize(self._settings.value("size", QSize(640, 480)))  # type: ignore
+        size = self._settings.value("size", QSize(640, 480))  # type: ignore
         self.resize(size)
 
     def writeSettings(self) -> None:
@@ -99,5 +119,17 @@ class AutoWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    dialog = AutoWindow("3ds Max Window", parent=maxhwnd)
-    dialog.show()
+
+    class TestBindWindow(AutoWindow):
+        def __init__(self) -> None:
+            super().__init__("Test Bind Window")
+            self.setLayout(QVBoxLayout())
+            spn = QSpinBox()
+            self.layout().addWidget(spn)
+
+            sphere = rt.Sphere()
+
+            bind(spn.valueChanged, spn.setValue, sphere, "radius")
+
+    w = TestBindWindow()
+    w.show()

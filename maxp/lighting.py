@@ -1,5 +1,5 @@
 from .. import rt
-from ..utils import files
+from . import fileio
 
 LIGHT_DOME_NAME = "_Dome"
 LIGHT_ACCENT_BACK_NAME = "_AccentBack"
@@ -8,7 +8,7 @@ LIGHT_ACCENT_SIDE_NAME = "_AccentSide"
 
 def importLightRig() -> bool:
     print("importing...")
-    rigFile = files.relative("..\\resources\\LightRig.max")
+    rigFile = fileio.relative("..\\resources\\LightRig.max")
     print(rigFile)
     rt.mergeMaxFile(rigFile)  # MAXScript
     return True

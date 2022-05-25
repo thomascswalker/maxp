@@ -3,7 +3,7 @@ import math
 
 # maxp
 from .. import rt
-from ..utils import maxscript
+from .. import context
 
 
 def createCamera() -> rt.Camera:
@@ -12,14 +12,14 @@ def createCamera() -> rt.Camera:
     return camera
 
 
-def alignCamera(camera: rt.Camera, object: rt.Node):
+def alignCamera(camera: rt.Camera, obj: rt.Node):
     # Move the target position to the center of the target object
     target = camera.target
-    target.pos = object.center
+    target.pos = obj.center
     fov = camera.fov
 
     # Get the bounds of the object
-    bounds = object.max - object.min
+    bounds = obj.max - obj.min
 
     # Get the largest bounding box dimension
     radius = max([bounds.x, bounds.y, bounds.z])
@@ -46,5 +46,5 @@ def setViewport(camera: rt.Camera) -> None:
 
 
 if __name__ == "__main__":
-    obj = maxscript.get_current_selection()
+    obj = context.get_current_selection()
     createIconCamera(obj)

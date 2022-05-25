@@ -3,8 +3,8 @@ import os
 from typing import List
 
 # Package
-from bettermaxtools.utils import maxscript
-from bettermaxtools.widgets.autowindow import AutoWindow
+from ..widgets.autowindow import AutoWindow
+
 # Qt
 from PySide2.QtWidgets import QFileDialog
 
@@ -13,7 +13,7 @@ class GameExporterWindow(AutoWindow):
     _modelQueue: List = []
 
     def __init__(self, parent=None):
-        super().__init__('Game Exporter', parent=parent, uiFile='gameexporter')
+        super().__init__("Game Exporter", parent=parent, uiFile="gameexporter")
         self.setup_connections()
         self.populate_models_list()
 
@@ -25,14 +25,12 @@ class GameExporterWindow(AutoWindow):
     def add_callbacks(self) -> None:
         super().add_callbacks()
         maxscript.add_callback(
-            'selectionSetChanged',
-            self.populate_models_list,
-            'GameExporter'
+            "selectionSetChanged", self.populate_models_list, "GameExporter"
         )
 
     def delete_callbacks(self) -> None:
         super().delete_callbacks()
-        maxscript.remove_callback('selectionSetChanged', 'GameExporter')
+        maxscript.remove_callback("selectionSetChanged", "GameExporter")
 
     def on_explore_output_clicked(self):
         output = QFileDialog.getExistingDirectory(self, "Select output directory")
@@ -69,6 +67,7 @@ class GameExporterWindow(AutoWindow):
             name = model.name
             filename = os.path.join(path, prefix + name + ".fbx")
             maxscript.export_model(obj, filename, origin=origin, upAxis=upAxis)
+
 
 if __name__ == "__main__":
     w = GameExporterWindow()
