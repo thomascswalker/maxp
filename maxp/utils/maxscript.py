@@ -1,17 +1,15 @@
 # Standard
-from typing import Any, List, TypeVar, Union
-from collections import namedtuple
 import ast
+from collections import namedtuple
+from typing import Any, List, TypeVar, Union
 
 # 3ds Max
-from bettermaxtools import rt
-
-Camera = TypeVar('Camera')
-NodeInfo = namedtuple("NodeInfo", ["reference", "name", "material"])
+from ..runtime import pymxs, rt
 
 
 def redraw() -> None:
     rt.redrawViews()
+
 
 def get_current_selection() -> Union[List, Any]:
     """Get the current selection in the scene.
@@ -45,8 +43,10 @@ def get_nodes(selected: bool = False) -> List[NodeInfo]:
 
     return nodes
 
+
 def get_node_by_name(name: str) -> Any:
     return rt.getNodeByName(name)
+
 
 def is_valid(node: Any) -> bool:
     if node is None:
@@ -57,12 +57,14 @@ def is_valid(node: Any) -> bool:
 
     return True
 
+
 def has_user_prop(node: Any, prop: str) -> bool:
     if not is_valid(node):
         raise ValueError(f"Node {node} is not valid.")
 
     value = rt.getUserProp(node, prop)
     return True if value is not None else False
+
 
 def get_user_prop(node: Any, prop: str) -> Any:
     if not has_user_prop(node, prop):
@@ -71,6 +73,7 @@ def get_user_prop(node: Any, prop: str) -> Any:
     value = str(rt.getUserProp(node, prop))
     print(f"{prop}={value}")
     return ast.literal_eval(value)
+
 
 def add_callback(name, method, id):
     rt.callbacks.addScript(rt.name(name), method, id=rt.name(id))

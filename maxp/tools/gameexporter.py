@@ -2,12 +2,11 @@
 import os
 from typing import List
 
-# Qt
-from PySide2.QtWidgets import QFileDialog
-
 # Package
 from bettermaxtools.utils import maxscript
 from bettermaxtools.widgets.autowindow import AutoWindow
+# Qt
+from PySide2.QtWidgets import QFileDialog
 
 
 class GameExporterWindow(AutoWindow):

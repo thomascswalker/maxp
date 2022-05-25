@@ -1,21 +1,18 @@
+# Standard
 import math
-from typing import Any
 
-from bettermaxtools import rt
-from bettermaxtools.utils import maxscript
-
-import importlib
-
-importlib.reload(maxscript)
+# maxp
+from .. import rt
+from ..utils import maxscript
 
 
-def create_camera() -> maxscript.Camera:
+def createCamera() -> rt.Camera:
     camera = rt.targetCamera(target=rt.targetObject())
     camera.fov = 25.0
     return camera
 
 
-def align_camera(camera: maxscript.Camera, object: Any):
+def alignCamera(camera: rt.Camera, object: rt.Node):
     # Move the target position to the center of the target object
     target = camera.target
     target.pos = object.center
@@ -38,15 +35,16 @@ def align_camera(camera: maxscript.Camera, object: Any):
     camera.pos = goalPos
 
 
-def create_icon_camera(obj: Any):
-    camera = create_camera()
-    align_camera(camera, obj)
+def createIconCamera(obj: rt.Node):
+    camera = createCamera()
+    alignCamera(camera, obj)
     rt.viewport.setCamera(camera)
 
 
-def set_viewport_camera(camera: maxscript.Camera) -> None:
+def setViewport(camera: rt.Camera) -> None:
     rt.viewport.setCamera(camera)
+
 
 if __name__ == "__main__":
     obj = maxscript.get_current_selection()
-    create_icon_camera(obj)
+    createIconCamera(obj)

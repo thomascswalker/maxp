@@ -1,9 +1,10 @@
-from PySide2.QtWidgets import QFrame, QVBoxLayout, QPushButton, QMessageBox
-from bettermaxtools.widgets.autowindow import AutoWindow
-from bettermaxtools.utils import lighting, cameras, maxscript
-from bettermaxtools import maxhwnd
-
 import importlib
+
+from bettermaxtools import maxhwnd
+from bettermaxtools.utils import cameras, lighting, maxscript
+from bettermaxtools.widgets.autowindow import AutoWindow
+from PySide2.QtWidgets import QFrame, QMessageBox, QPushButton, QVBoxLayout
+
 importlib.reload(lighting)
 importlib.reload(maxscript)
 importlib.reload(lighting)

@@ -1,16 +1,15 @@
 # Standard
-import os
-import sys
 import abc
+import os
 
 # Qt
-from PySide2.QtWidgets import QMainWindow, QApplication
-from PySide2.QtCore import QFile, QSettings, QEvent, QSize
+from PySide2.QtCore import QEvent, QFile, QPoint, QSettings, QSize
 from PySide2.QtUiTools import QUiLoader
+from PySide2.QtWidgets import QMainWindow, QWidget
 
-# Package
-from bettermaxtools.utils import files
-from bettermaxtools import maxhwnd
+# Internal
+from .. import maxhwnd
+from ..utils import files
 
 
 class AutoWindow(QMainWindow):
@@ -21,16 +20,18 @@ class AutoWindow(QMainWindow):
     - Kill instances of this window upon launch (ensuring
     only one instance of this window exists)
     """
+
     _uniqueName: str
+    _settings: QSettings
 
     def __init__(
         self,
         title: str,
-        parent=None,
+        parent: QWidget = maxhwnd,
         uiFile: str = "",
-        unique: bool = True
+        unique: bool = True,
     ) -> None:
-        super().__init__(maxhwnd)
+        super().__init__(parent)
         self.setWindowTitle(title)
         self._uniqueName = self.__class__.__name__
         self.setObjectName(self._uniqueName)
@@ -38,7 +39,7 @@ class AutoWindow(QMainWindow):
 
         if uiFile != "":
             loader = QUiLoader()
-            filename = files.relative(f"..\\tools\\{uiFile}.ui")
+            filename = files.relative(rf"..\tools\{uiFile}.ui")
 
             if not os.path.exists(filename):
                 raise FileNotFoundError(f"File {filename} not found!")
@@ -55,7 +56,20 @@ class AutoWindow(QMainWindow):
         if unique:
             self.close_instances()
 
-    def close_instances(self) -> None:
+    # Override
+    def showEvent(self, event: QEvent) -> None:
+        self.read_settings()
+        self.add_callbacks()
+        super().showEvent(event)
+
+    # Override
+    def closeEvent(self, event: QEvent) -> None:
+        self.write_settings()
+        self.delete_callbacks()
+        super().closeEvent(event)
+
+    def closeInstances(self) -> None:
+        """Close all instances of this window."""
         if self.parentWidget() is None:
             return
 
@@ -64,37 +78,26 @@ class AutoWindow(QMainWindow):
             if dialog.isVisible():
                 dialog.close()
 
-    def read_settings(self) -> None:
-        self.move(self._settings.value('pos', QSize(0, 0)))
-        self.resize(self._settings.value('size', QSize(640, 480)))
+    def readSettings(self) -> None:
+        pos = QPoint(self._settings.value("pos", QSize(0, 0)))  # type: ignore
+        self.move(pos)
 
-    def write_settings(self) -> None:
-        self._settings.setValue('pos', self.pos())
-        self._settings.setValue('size', self.size())
+        size = QSize(self._settings.value("size", QSize(640, 480)))  # type: ignore
+        self.resize(size)
+
+    def writeSettings(self) -> None:
+        self._settings.setValue("pos", self.pos())
+        self._settings.setValue("size", self.size())
 
     @abc.abstractmethod
-    def add_callbacks(self) -> None:
+    def addCallbacks(self) -> None:
         pass
 
     @abc.abstractmethod
-    def delete_callbacks(self) -> None:
+    def deleteCallbacks(self) -> None:
         pass
-
-    # Qt Override
-    def showEvent(self, event: QEvent) -> None:
-        self.read_settings()
-        self.add_callbacks()
-        super().showEvent(event)
-
-    # Qt Override
-    def closeEvent(self, event: QEvent) -> None:
-        self.write_settings()
-        self.delete_callbacks()
-        super().closeEvent(event)
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    dialog = AutoWindow()
+    dialog = AutoWindow("3ds Max Window", parent=maxhwnd)
     dialog.show()
-    sys.exit(app.exec_())

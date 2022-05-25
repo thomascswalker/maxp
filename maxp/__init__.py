@@ -1,2 +1,3 @@
-from .maxruntime import rt
-from .maxruntime import maxhwnd
+# flake8: noqa
+from .runtime import rt
+from .runtime import maxhwnd
