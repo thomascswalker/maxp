@@ -8,7 +8,7 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow, QWidget
 
 # Internal
-from .. import maxhwnd
+from .. import maxhwnd, rt
 from ..utils import files
 
 

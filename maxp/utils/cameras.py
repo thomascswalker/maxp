@@ -7,7 +7,7 @@ from ..utils import maxscript
 
 
 def createCamera() -> rt.Camera:
-    camera = rt.targetCamera(target=rt.targetObject())
+    camera = rt.Targetcamera(target=rt.Targetobject())
     camera.fov = 25.0
     return camera
 
