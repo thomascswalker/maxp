@@ -1,19 +1,23 @@
 # Standard
 import abc
 import os
-from typing import Any, Callable, List
+from typing import _T, Any, Callable, List
 
 # Qt
-from PySide2.QtCore import QEvent, QFile, QSettings, QSize, Signal
+from PySide2.QtCore import QObject, QEvent, QFile, QSettings, QSize, Signal
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow, QWidget
 
 # Internal
-from .. import maxhwnd, rt
+from .. import MAX_HWND, rt
 from .. import fileio
 
+# Globals
+global BINDINGS
+BINDINGS = []
 
-class Binding:
+
+class Binding(QObject):
     """Bind a QWidget object to a 3ds Max node property and vice versa."""
 
     _signal: Signal
@@ -22,18 +26,26 @@ class Binding:
     _prop: str
     _callback: rt.NodeEventCallback
 
-    def __init__(
-        self, signal: Signal, slot: Callable[[Any], None], node: rt.Node, prop: str
-    ) -> None:
-        self._signal = signal
-        self._slot = slot  # type: ignore
-        self._node = node
-        self._prop = prop
+    def __init__(self, *args) -> None:
+        super().__init__(args)
+        if 0 < len(args) < 4:
+            raise ValueError(f"Wanted 0 or 4 arguments, got {len(args)}")
+        if len(args) == 4:
+            self.setSignal(args[0])
+            self.setSlot(args[1])
+            self.setNode(args[2])
+            self.setProp(args[3])
 
-        self._signal.connect(self._execWidget)  # type: ignore
-        self._callback = rt.NodeEventCallback(all=self._execNode)
+            self._bind()
+            self._execNode()
+
+    def __call__(self) -> None:
+        if not any(self._signal, self._slot, self._node, self._prop):
+            raise ValueError("Initial values not set")
+        self._bind()
         self._execNode()
 
+    # Private
     def _execNode(self, *args: Any) -> None:
         """Called when the node triggers an event callback. Updates the slot on the
         QWidget object.
@@ -42,12 +54,14 @@ class Binding:
             event (rt.Name): Unused
             nodes (List[int]): Unused
         """
-        if hasattr(self._node, self._prop):
-            value = getattr(self._node, self._prop)
-            self._slot(value)  # type: ignore
+        if hasattr(self.node(), self.prop()):
+            value = getattr(self.node(), self.prop())
+            slot = self.slot()
+            slot(value)  # type: ignore
         else:
             self._unbind()
 
+    # Private
     def _execWidget(self, value: Any) -> None:
         """Called when the QWidget object emits the signal. Updates the nodes attribute
         with the new value.
@@ -55,12 +69,80 @@ class Binding:
         Args:
             value (Any): The value emitted from the signal.
         """
-        setattr(self._node, self._prop, value)
+        setattr(self.node(), self.prop(), value)
         rt.RedrawViews()
 
+    def _bind(self) -> None:
+        """Bind the NodeEventCallback."""
+        self._signal.connect(self._execWidget)  # type: ignore
+        self._callback = rt.NodeEventCallback(all=self._execNode)
+
     def _unbind(self) -> None:
-        """Unbinds (deconstructs) the NodeEventCallback."""
+        """Unbind (deconstructs) the NodeEventCallback."""
+        self._signal.disconnect(self._execWidget)
         self._callback = None
+
+    def signal(self) -> Signal:
+        return self._signal
+
+    def setSignal(self, signal: Signal) -> None:
+        if not isinstance(signal, Signal):
+            raise TypeError(f"{signal} is not a valid Signal")
+        self._signal = signal
+
+    def slot(self) -> Callable:
+        return self._slot
+
+    def setSlot(self, slot: Callable):
+        if not callable(slot):
+            raise TypeError(f"{slot} not callable")
+        self._slot = slot
+
+    def node(self) -> rt.Node:
+        return self._node
+
+    def setNode(self, node: rt.Node) -> None:
+        if not rt.IsValidNode(node):
+            raise ValueError(f"{node} is invalid")
+
+        if rt.IsDeleted(node):
+            raise ValueError(f"Node {node} is already deleted")
+
+        self._node = node
+
+    def prop(self) -> str:
+        return self._prop
+
+    def setProp(self, prop: str) -> None:
+        self._prop = prop
+
+
+def bind(signal: Signal, slot: Callable, node: rt.Node, prop: str) -> None:
+    """Bind a QWidget object to a 3ds Max node property and vice versa.
+
+    Args:
+        signal (Signal): The signal emitted from the widget.
+        slot (Callable): The method (slot) to set the widget's value.
+        node (rt.Node): The node to bind the widget to.
+        prop (str): The node's property name to bind to.
+
+    Usage::
+    ```python
+    spn = QSpinBox()
+    sphere = rt.Sphere()
+    self.bind(spn.valueChanged, spn.setValue, sphere, "radius")
+    ```
+    """
+    binding = Binding(signal, slot, node, prop)
+    BINDINGS.append(binding)
+
+
+def unbind(signal: Signal, node: rt.Node) -> None:
+    for binding in BINDINGS:
+        if binding.signal() != signal and binding.node() != node:
+            continue
+        binding.unbind()
+        break
 
 
 class AutoWindow(QMainWindow):
@@ -75,12 +157,12 @@ class AutoWindow(QMainWindow):
     _uniqueName: str
     _uiFileName: str
     _settings: QSettings
-    _bindings: List[Binding]
+    bindings: List[Binding]
 
     def __init__(
         self,
         title: str,
-        parent: QWidget = maxhwnd,
+        parent: QWidget = MAX_HWND,
         uiFileName: str = "",
         unique: bool = True,
     ) -> None:
@@ -117,7 +199,7 @@ class AutoWindow(QMainWindow):
         self.writeSettings()
         self.deleteCallbacks()
         for binding in reversed(self._bindings):
-            del binding
+            binding.unbind()
         super().closeEvent(event)
 
     def _setupUi(self) -> None:
@@ -157,27 +239,6 @@ class AutoWindow(QMainWindow):
     @abc.abstractmethod
     def _setupConnections(self) -> None:
         pass
-
-    def bind(
-        self, signal: Signal, slot: Callable[[Any], None], node: rt.Node, prop: str
-    ) -> None:
-        """Bind a QWidget object to a 3ds Max node property and vice versa.
-
-        Args:
-            signal (Signal): The signal emitted from the widget.
-            slot (Callable): The method (slot) to set the widget's value.
-            node (rt.Node): The node to bind the widget to.
-            prop (str): The node's property name to bind to.
-
-        Usage::
-        ```python
-        spn = QSpinBox()
-        sphere = rt.Sphere()
-        self.bind(spn.valueChanged, spn.setValue, sphere, "radius")
-        ```
-        """
-        binding = Binding(signal, slot, node, prop)
-        self._bindings.append(binding)
 
     def closeInstances(self) -> None:
         """Close all instances of this window."""

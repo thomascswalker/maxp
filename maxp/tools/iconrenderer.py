@@ -1,6 +1,6 @@
 import importlib
 
-from bettermaxtools import maxhwnd
+from bettermaxtools import MAX_HWND
 from bettermaxtools.utils import cameras, lighting, maxscript
 from bettermaxtools.widgets.autowindow import AutoWindow
 from PySide2.QtWidgets import QFrame, QMessageBox, QPushButton, QVBoxLayout
@@ -12,7 +12,7 @@ importlib.reload(lighting)
 
 class IconRendererWindow(AutoWindow):
     def __init__(self):
-        super().__init__('Icon Renderer')
+        super().__init__("Icon Renderer")
         self.importLightRigBtn = QPushButton("Import Light Rig")
         self.importLightRigBtn.clicked.connect(self.on_light_rig_btn_clicked)
 
@@ -33,11 +33,11 @@ class IconRendererWindow(AutoWindow):
             lighting.import_light_rig()
         else:
             print("Rig found - not importing!")
-            QMessageBox.warning(maxhwnd, 'Import', 'Light rig already found in scene.')
+            QMessageBox.warning(MAX_HWND, "Import", "Light rig already found in scene.")
 
     def on_align_camera_btn_clicked(self):
         selected = maxscript.get_current_selection()
-        selected.pos = maxscript.rt.Point3(0,0,0)
+        selected.pos = maxscript.rt.Point3(0, 0, 0)
         camera = cameras.create_camera()
         camera.fov = 12.5
         cameras.align_camera(camera, selected)

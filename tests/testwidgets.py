@@ -16,7 +16,7 @@ class TestBindWindow(autowindow.AutoWindow):
         self.ui.layout().addWidget(spn)
 
         sphere = rt.Sphere()
-        self.bind(spn.valueChanged, spn.setValue, sphere, "radius")
+        autowindow.bind(spn.valueChanged, spn.setValue, sphere, "radius")
 
 
 w = TestBindWindow()
