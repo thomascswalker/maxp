@@ -1,0 +1,10 @@
+# Changelog
+
+## 0.1.6
+- Add CHANGELOG.txt
+
+## 0.1.5
+- Add simple when construct handler class
+
+## 0.1.4
+- Initial successful push to PyPi
