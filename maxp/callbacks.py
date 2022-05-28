@@ -3,6 +3,11 @@ from typing import Union, Callable, List
 
 from pymxs import runtime as rt
 
+global CALLBACKS
+CALLBACKS: List[When]
+if not isinstance(CALLBACKS, list):
+    CALLBACKS = []
+
 
 class Manager:
     callbacks: List[When] = []
@@ -73,7 +78,7 @@ class When:
     ) -> None:
         objs = [objs] if not isinstance(objs, list) else objs
         for obj in objs:
-            if rt.isValid(obj):
+            if rt.isValidNode(obj):
                 continue
             raise ValueError(f"{obj} is invalid.")
         self._objs = objs
@@ -93,12 +98,14 @@ class When:
             )
         rt._tempMethod = self._method
         mxsArray = "#(" + ",".join(["$" + obj.name for obj in self._objs]) + ")"
-        mxs = f"""
-        when {self._attr} {mxsArray} {self._trigger} handleAt:#{self._handleAt} node do ( # noqa: E501
-            _tempMethod node
+        mxs = (
+            f"when {self._attr} {mxsArray} {self._trigger} "
+            f"handleAt:#{self._handleAt} node do ("
+            "_tempMethod node"
+            ")"
         )
-        """
-        rt.Execute(mxs)
+        handler = rt.Execute(mxs)
+        CALLBACKS.append(handler)
 
 
 def printer(obj):
@@ -108,6 +115,7 @@ def printer(obj):
 def testWhen():
     sphere = rt.Sphere()
     When(sphere, Trigger.Changes, printer, attr=Attribute.Parameters)
+    print(CALLBACKS)
 
 
 testWhen()
