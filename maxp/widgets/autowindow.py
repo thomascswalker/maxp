@@ -1,7 +1,7 @@
 # Standard
 import abc
 import os
-from typing import _T, Any, Callable, List
+from typing import Any, Callable, List
 
 # Qt
 from PySide2.QtCore import QObject, QEvent, QFile, QSettings, QSize, Signal
@@ -27,7 +27,7 @@ class Binding(QObject):
     _callback: rt.NodeEventCallback
 
     def __init__(self, *args) -> None:
-        super().__init__(args)
+        super().__init__(*args)
         if 0 < len(args) < 4:
             raise ValueError(f"Wanted 0 or 4 arguments, got {len(args)}")
         if len(args) == 4:
@@ -40,7 +40,7 @@ class Binding(QObject):
             self._execNode()
 
     def __call__(self) -> None:
-        if not any(self._signal, self._slot, self._node, self._prop):
+        if not any([self._signal, self._slot, self._node, self._prop]):
             raise ValueError("Initial values not set")
         self._bind()
         self._execNode()
@@ -157,7 +157,7 @@ class AutoWindow(QMainWindow):
     _uniqueName: str
     _uiFileName: str
     _settings: QSettings
-    bindings: List[Binding]
+    _bindings: List[Binding]
 
     def __init__(
         self,

@@ -1,5 +1,6 @@
 # Standard
 from contextlib import contextmanager
+from typing import Iterator
 
 # 3ds Max
 from .runtime import rt
@@ -55,7 +56,7 @@ def setCoordsys(space: str) -> None:
 
 
 @contextmanager
-def coordsys(space: str) -> None:
+def coordsys(space: str) -> Iterator[None]:
     """Contextually set the current coordinate system.
 
     Usage::
