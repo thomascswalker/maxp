@@ -28,6 +28,7 @@ setup(
     packages=[
         "maxp",
     ],
+    package_data={"maxp": ["py.typed"]},
     install_requires=["pyside2"],
     include_package_data=True,
 )

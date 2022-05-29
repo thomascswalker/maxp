@@ -4,20 +4,19 @@ import os
 from typing import Any, Callable, List
 
 # Qt
-from PySide2.QtCore import QObject, QEvent, QFile, QSettings, QSize, Signal
+from PySide2.QtCore import QEvent, QFile, QObject, QSettings, QSize, Signal
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow, QWidget
 
 # Internal
-from .. import MAX_HWND, rt
-from .. import fileio
+from .. import MAX_HWND, fileio, rt
 
 # Globals
-global BINDINGS
-BINDINGS = []
+global HANDLERS
+HANDLERS = []
 
 
-class Binding(QObject):
+class Handler(QObject):
     """Bind a QWidget object to a 3ds Max node property and vice versa."""
 
     _signal: Signal
@@ -133,15 +132,15 @@ def bind(signal: Signal, slot: Callable, node: rt.Node, prop: str) -> None:
     self.bind(spn.valueChanged, spn.setValue, sphere, "radius")
     ```
     """
-    binding = Binding(signal, slot, node, prop)
-    BINDINGS.append(binding)
+    handler = Handler(signal, slot, node, prop)
+    HANDLERS.append(handler)
 
 
 def unbind(signal: Signal, node: rt.Node) -> None:
-    for binding in BINDINGS:
-        if binding.signal() != signal and binding.node() != node:
+    for handler in HANDLERS:
+        if handler.signal() != signal and handler.node() != node:
             continue
-        binding.unbind()
+        handler.unbind()
         break
 
 
@@ -157,7 +156,7 @@ class AutoWindow(QMainWindow):
     _uniqueName: str
     _uiFileName: str
     _settings: QSettings
-    _bindings: List[Binding]
+    _handlers: List[Handler]
 
     def __init__(
         self,
@@ -180,9 +179,9 @@ class AutoWindow(QMainWindow):
         self._uiFileName = uiFileName
         self._setupUi()
 
-        # Connection and binding setup
+        # Connection and handler setup
         self._setupConnections()
-        self._bindings = []
+        self._handlers = []
 
         # Close instances if this window should be unique
         if unique:
@@ -198,8 +197,8 @@ class AutoWindow(QMainWindow):
     def closeEvent(self, event: QEvent) -> None:
         self.writeSettings()
         self.deleteCallbacks()
-        for binding in reversed(self._bindings):
-            binding.unbind()
+        for handler in reversed(self._handlers):
+            handler.unbind()
         super().closeEvent(event)
 
     def _setupUi(self) -> None:

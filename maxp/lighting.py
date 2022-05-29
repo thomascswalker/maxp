@@ -1,4 +1,4 @@
-from .. import rt
+from . import rt
 from . import fileio
 
 LIGHT_DOME_NAME = "_Dome"

@@ -3,6 +3,8 @@ from typing import Union, Callable, List
 
 from pymxs import runtime as rt
 
+from . import scene
+
 global CALLBACKS
 CALLBACKS: List[When]
 if not isinstance(CALLBACKS, list):
@@ -78,7 +80,7 @@ class When:
     ) -> None:
         objs = [objs] if not isinstance(objs, list) else objs
         for obj in objs:
-            if rt.isValidNode(obj):
+            if scene.isValid(obj):
                 continue
             raise ValueError(f"{obj} is invalid.")
         self._objs = objs
