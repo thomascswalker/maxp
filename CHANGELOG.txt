@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+- Add nodes.py for node operations
+- Update callbacks.py class names (Binding -> Handler)
+
 ## 0.1.6
 - Add CHANGELOG.txt
 
