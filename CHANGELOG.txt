@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.8
+- Add values.py
+- Add requirements.txt to simplify required packages
+- Add numpy requirement
+
 ## 0.1.7
 - Add nodes.py for node operations
 - Update callbacks.py class names (Binding -> Handler)

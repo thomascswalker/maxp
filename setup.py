@@ -7,6 +7,11 @@ with open("README.md") as f:
 with open("version.txt") as f:
     VERSION = f.read()
 
+with open("requirements.txt") as f:
+    INSTALL_REQUIRES = []
+    lines = f.readlines()
+    for line in lines:
+        INSTALL_REQUIRES.append(line.strip().replace("\n", ""))
 
 setup(
     name="maxp",
@@ -29,6 +34,6 @@ setup(
         "maxp",
     ],
     package_data={"maxp": ["py.typed"]},
-    install_requires=["pyside2"],
+    install_requires=INSTALL_REQUIRES,
     include_package_data=True,
 )

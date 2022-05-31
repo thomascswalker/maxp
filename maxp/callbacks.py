@@ -49,6 +49,8 @@ class Attribute:
 
 
 class Trigger:
+    """These specify the type of triggered event."""
+
     Changes: str = "changes"
     """Execute on the change of an Attribute."""
     Deleted: str = "deleted"
@@ -56,6 +58,8 @@ class Trigger:
 
 
 class HandleMode:
+    """These specify when to handle the event."""
+
     RedrawViews: rt.Name = rt.Name("redrawViews")
     """Execute when the viewport redraws views."""
     TimeChange: rt.Name = rt.Name("timeChange")
@@ -108,16 +112,3 @@ class When:
         )
         handler = rt.Execute(mxs)
         CALLBACKS.append(handler)
-
-
-def printer(obj):
-    print(obj.radius)
-
-
-def testWhen():
-    sphere = rt.Sphere()
-    When(sphere, Trigger.Changes, printer, attr=Attribute.Parameters)
-    print(CALLBACKS)
-
-
-testWhen()
