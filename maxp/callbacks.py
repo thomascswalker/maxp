@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Union, Callable, List
+
+from typing import Callable, List, Union
 
 from pymxs import runtime as rt
 

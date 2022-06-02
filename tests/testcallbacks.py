@@ -1,5 +1,4 @@
-from maxp import nodes, rt
-from maxp import callbacks
+from maxp import callbacks, nodes, rt
 from maxp.callbacks import GeneralEvent
 
 

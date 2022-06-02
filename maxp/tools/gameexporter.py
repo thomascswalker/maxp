@@ -2,11 +2,11 @@
 import os
 from typing import List
 
-# Package
-from ..widgets.autowindow import AutoWindow
-
 # Qt
 from PySide2.QtWidgets import QFileDialog
+
+# Package
+from ..widgets.autowindow import AutoWindow
 
 
 class GameExporterWindow(AutoWindow):

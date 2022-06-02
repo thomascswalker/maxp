@@ -8,7 +8,7 @@ from cmath import isclose
 from typing import Any, List, Union
 
 # Internal
-from . import rt, MXSWrapperBase
+from . import MXSWrapperBase, rt
 
 
 def isValid(node: rt.Node) -> bool:
