@@ -42,8 +42,3 @@ def createIconCamera(obj: rt.Node):
 
 def setViewport(camera: rt.Camera) -> None:
     rt.viewport.setCamera(camera)
-
-
-if __name__ == "__main__":
-    obj = context.get_current_selection()
-    createIconCamera(obj)

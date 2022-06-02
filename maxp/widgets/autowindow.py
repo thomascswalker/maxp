@@ -78,7 +78,7 @@ class Handler(QObject):
 
     def _unbind(self) -> None:
         """Unbind (deconstructs) the NodeEventCallback."""
-        self._signal.disconnect(self._execWidget)
+        self._signal.disconnect(self._execWidget)  # type: ignore
         self._callback = None
 
     def signal(self) -> Signal:
@@ -95,7 +95,7 @@ class Handler(QObject):
     def setSlot(self, slot: Callable):
         if not callable(slot):
             raise TypeError(f"{slot} not callable")
-        self._slot = slot
+        self._slot = slot  # type: ignore
 
     def node(self) -> rt.Node:
         return self._node

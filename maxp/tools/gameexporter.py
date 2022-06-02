@@ -24,13 +24,13 @@ class GameExporterWindow(AutoWindow):
 
     def add_callbacks(self) -> None:
         super().add_callbacks()
-        maxscript.add_callback(
-            "selectionSetChanged", self.populate_models_list, "GameExporter"
-        )
+        # maxscript.add_callback(
+        #     "selectionSetChanged", self.populate_models_list, "GameExporter"
+        # )
 
     def delete_callbacks(self) -> None:
         super().delete_callbacks()
-        maxscript.remove_callback("selectionSetChanged", "GameExporter")
+        # maxscript.remove_callback("selectionSetChanged", "GameExporter")
 
     def on_explore_output_clicked(self):
         output = QFileDialog.getExistingDirectory(self, "Select output directory")
@@ -43,7 +43,8 @@ class GameExporterWindow(AutoWindow):
         self.ui.modelList.clear()
         self._modelQueue = []
 
-        nodes = maxscript.get_nodes(selected=self.ui.exportSelected.isChecked())
+        # nodes = maxscript.get_nodes(selected=self.ui.exportSelected.isChecked())
+        nodes: List = []
         for node in nodes:
             self.ui.modelList.addItem(node.name)
             self._modelQueue.append(node)
@@ -66,7 +67,7 @@ class GameExporterWindow(AutoWindow):
             obj = model.reference
             name = model.name
             filename = os.path.join(path, prefix + name + ".fbx")
-            maxscript.export_model(obj, filename, origin=origin, upAxis=upAxis)
+            # maxscript.export_model(obj, filename, origin=origin, upAxis=upAxis)
 
 
 if __name__ == "__main__":

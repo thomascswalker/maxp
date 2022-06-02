@@ -2,18 +2,16 @@ from __future__ import annotations
 
 from typing import Callable, List, Union
 
-from pymxs import runtime as rt
+from . import nodes, rt
 
-from . import nodes
-
-global CALLBACKS
-CALLBACKS: List[When] = []
-if not isinstance(CALLBACKS, list):
-    CALLBACKS = []
+global HANDLERS
+HANDLERS: List[When] = []
+if not isinstance(HANDLERS, list):
+    HANDLERS = []
 
 
 class Manager:
-    callbacks: List[When] = []
+    handlers: List[When] = []
 
 
 class Attribute:
@@ -112,7 +110,7 @@ class When:
             ")"
         )
         handler = rt.Execute(mxs)
-        CALLBACKS.append(handler)
+        HANDLERS.append(handler)
 
 
 class GeneralEvent:
