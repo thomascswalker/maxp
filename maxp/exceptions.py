@@ -1,4 +1,4 @@
-from . import rt
+from typing import Any
 
 
 class MaxRuntimeError(Exception):
@@ -8,12 +8,12 @@ class MaxRuntimeError(Exception):
 
 
 class InvalidNodeError(Exception):
-    def __init__(self, node: rt.Node) -> None:
+    def __init__(self, node: Any) -> None:
         msg = f"Node {node} is not valid."
         super().__init__(msg)
 
 
 class DeletedNodeError(Exception):
-    def __init__(self, node: rt.Node) -> None:
+    def __init__(self, node: Any) -> None:
         msg = f"Node {node} is deleted."
         super().__init__(msg)

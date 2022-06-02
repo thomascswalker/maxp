@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.10
+- Add install.bat
+- Fix circular dependency with exceptions.py and runtime.py
+
 ## 0.1.9
 - Add general event callback methods
 - Add origin context manager
