@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, List, Union
 
-from . import nodes, rt
+from maxp import scene, rt
 
 global HANDLERS
 HANDLERS: List[When] = []
@@ -83,7 +83,7 @@ class When:
     ) -> None:
         objs = [objs] if not isinstance(objs, list) else objs
         for obj in objs:
-            if nodes.isValid(obj):
+            if scene.isValid(obj):
                 continue
             raise ValueError(f"{obj} is invalid.")
         self._objs = objs
@@ -131,7 +131,7 @@ class GeneralEvent:
     fileOpenFailed: str = "fileOpenFailed"
     filePreSaveOld: str = "filePreSaveOld"
     filePostSaveOld: str = "filePostSaveOld"
-    selectionsetChanged: str = "selectionsetChanged"
+    selectionSetChanged: str = "selectionSetChanged"
     bitmapChanged: str = "bitmapChanged"
     preRender: str = "preRender"
     postRender: str = "postRender"
@@ -224,7 +224,7 @@ class GeneralEvent:
     postNodesCloned: str = "postNodesCloned"
     systemPreDirChange: str = "systemPreDirChange"
     systemPostDirChange: str = "systemPostDirChange"
-    svSelectionsetChanged: str = "svSelectionsetChanged"
+    svselectionSetChanged: str = "svselectionSetChanged"
     svDoubleclickGraphnode: str = "svDoubleclickGraphnode"
     preRendererChange: str = "preRendererChange"
     postRendererChange: str = "postRendererChange"

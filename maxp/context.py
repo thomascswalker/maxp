@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from typing import Iterator
 
 # 3ds Max
-from .runtime import rt
+from maxp import rt
 
 COORD_SPACES = [
     "view",

@@ -9,7 +9,7 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow, QWidget
 
 # Internal
-from .. import MAX_HWND, fileio, rt
+from maxp import MAX_HWND, fileio, rt
 
 # Globals
 global HANDLERS

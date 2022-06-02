@@ -8,7 +8,7 @@ from cmath import isclose
 from typing import Any, List, Union
 
 # Internal
-from . import MXSWrapperBase, rt
+from maxp import MXSWrapperBase, rt
 
 
 def isValid(node: rt.Node) -> bool:
@@ -76,11 +76,14 @@ def getNodesByName(names: List[str]) -> List[rt.Node]:
     return nodes
 
 
-def getNodes(type: Any = None) -> List[rt.Node]:
+def getNodes(type: Any = None, selected: bool = False) -> List[rt.Node]:
     """Return all nodes in the scene. Optionally, if `type` is specified, return
     only nodes of the specified type.
     """
-    nodes = [node for node in rt.Objects if isValid(node)]
+    if selected:
+        nodes = rt.GetCurrentSelection()
+    else:
+        nodes = [node for node in rt.Objects if isValid(node)]
     if not type:
         nodes = [node for node in nodes if isClass(node, type)]
     return nodes

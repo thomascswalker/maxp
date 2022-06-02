@@ -2,8 +2,8 @@ import inspect
 import os
 from typing import List
 
-from . import nodes, rt
-from .exceptions import InvalidNodeError
+from maxp import rt, scene
+from maxp.exceptions import InvalidNodeError
 
 
 def relative(filename: str) -> str:
@@ -63,7 +63,7 @@ def importFiles(filenames: List[str]) -> None:
 
 
 def exportNode(node: rt.Node, filepath: str, fileext: str) -> str:
-    if not nodes.isValid(node):
+    if not scene.isValid(node):
         raise InvalidNodeError(node)
     rt.Select(node)
     if fileext == ".fbx":

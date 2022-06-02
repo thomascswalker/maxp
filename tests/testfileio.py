@@ -1,11 +1,11 @@
 import os
-from ..maxp import rt, nodes, fileio, context
+from ..maxp import rt, fileio, context, scene
 
 
 def test_originExport():
     sphere = rt.Sphere()
     origPos = rt.Point3(25, 5, 50)
-    nodes.setProperty(sphere, "transform.position", origPos)
+    scene.setProperty(sphere, "transform.position", origPos)
     path = "C:\\Users\\Tom\\Desktop"
     ext = ".obj"
     with context.origin(sphere):

@@ -1,4 +1,4 @@
-from .runtime import rt
+from maxp import rt
 
 
 def toArray(iterable: list) -> rt.Array:

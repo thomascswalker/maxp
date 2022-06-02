@@ -1,12 +1,14 @@
 # Standard
-import os
 from typing import List
 
 # Qt
 from PySide2.QtWidgets import QFileDialog
+from maxp import fileio
 
 # Package
-from ..widgets.autowindow import AutoWindow
+from maxp.widgets.autowindow import AutoWindow
+from maxp import callbacks, scene
+from maxp.callbacks import GeneralEvent
 
 
 class GameExporterWindow(AutoWindow):
@@ -24,13 +26,18 @@ class GameExporterWindow(AutoWindow):
 
     def add_callbacks(self) -> None:
         super().add_callbacks()
-        # maxscript.add_callback(
-        #     "selectionSetChanged", self.populate_models_list, "GameExporter"
-        # )
+        callbacks.add(
+            GeneralEvent.selectionSetChanged,
+            self.populate_models_list,
+            id="GameExporter",
+        )
 
     def delete_callbacks(self) -> None:
         super().delete_callbacks()
-        # maxscript.remove_callback("selectionSetChanged", "GameExporter")
+        callbacks.remove(
+            GeneralEvent.selectionSetChanged,
+            id="GameExporter",
+        )
 
     def on_explore_output_clicked(self):
         output = QFileDialog.getExistingDirectory(self, "Select output directory")
@@ -43,8 +50,7 @@ class GameExporterWindow(AutoWindow):
         self.ui.modelList.clear()
         self._modelQueue = []
 
-        # nodes = maxscript.get_nodes(selected=self.ui.exportSelected.isChecked())
-        nodes: List = []
+        nodes = scene.getNodes(selected=self.ui.exportSelected.isChecked())
         for node in nodes:
             self.ui.modelList.addItem(node.name)
             self._modelQueue.append(node)
@@ -58,16 +64,13 @@ class GameExporterWindow(AutoWindow):
         return "Z"
 
     def export_models(self):
-        upAxis = self.get_up_axis()
-        origin = self.ui.moveToOrigin.isChecked()
+        # upAxis = self.get_up_axis()
+        # origin = self.ui.moveToOrigin.isChecked()
         path = self.ui.filePath.text()
-        prefix = self.ui.filePrefix.text()
+        # prefix = self.ui.filePrefix.text()
 
         for model in self._modelQueue:
-            obj = model.reference
-            name = model.name
-            filename = os.path.join(path, prefix + name + ".fbx")
-            # maxscript.export_model(obj, filename, origin=origin, upAxis=upAxis)
+            fileio.exportNode(model, path, ".fbx")
 
 
 if __name__ == "__main__":
