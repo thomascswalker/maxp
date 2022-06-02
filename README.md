@@ -14,7 +14,8 @@ View package on [PyPi](https://pypi.org/project/maxp/).
 
 ### In 3ds Max
 
-1. Download and run install.bat found in the root of this repository.
+1. Download and run `install.bat` found in the root of this repository.
+2. Enter the 3ds Max version you wish to install.
 
 ## Examples
 
