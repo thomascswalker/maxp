@@ -71,6 +71,30 @@ def coordsys(space: str) -> Iterator[None]:
     setCoordsys(current)
 
 
+@contextmanager
+def origin(
+    node: rt.Node, pos: bool = True, rot: bool = True, scale: bool = True
+) -> Iterator[None]:
+    """Contextually set the node's transforms to zero.
+
+    Usage::
+    ```python
+    with origin(node):
+        # Node's position, rotation, and scale are zero'd
+    # Node's transforms are returned to their original values
+    ```
+    """
+    current = node.transform
+    if pos:
+        node.transform.position = rt.Point3(0, 0, 0)
+    if rot:
+        node.transform.rotation = rt.Point3(0, 0, 0)
+    if scale:
+        node.transform.scale = rt.Point3(1, 1, 1)
+    yield
+    node.transform = current
+
+
 # def redraw() -> None:
 #     rt.RedrawViews()
 

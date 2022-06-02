@@ -1,9 +1,9 @@
-from maxp import rt
-from maxp.widgets import autowindow
+import importlib
 
 from PySide2.QtWidgets import QSpinBox, QVBoxLayout
 
-import importlib
+from maxp import rt
+from maxp.widgets import autowindow
 
 importlib.reload(autowindow)
 

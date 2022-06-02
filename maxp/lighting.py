@@ -1,5 +1,4 @@
-from . import rt
-from . import fileio
+from . import fileio, rt
 
 LIGHT_DOME_NAME = "_Dome"
 LIGHT_ACCENT_BACK_NAME = "_AccentBack"

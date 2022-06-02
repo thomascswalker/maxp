@@ -8,7 +8,7 @@ from cmath import isclose
 from typing import Any, List, Union
 
 # Internal
-from . import rt, MXSWrapperBase
+from . import MXSWrapperBase, rt
 
 
 def isValid(node: rt.Node) -> bool:
@@ -95,7 +95,7 @@ def hasProperty(node: rt.Node, name: str) -> bool:
     """Return True if `node` has the property `name`. Otherwise, return False."""
     if isinstance(node, MXSWrapperBase):
         try:
-            node.getmxsprop(node, name)
+            node.getmxsprop(name)
             return True
         except AttributeError:
             return False

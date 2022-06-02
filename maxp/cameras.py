@@ -2,8 +2,7 @@
 import math
 
 # maxp
-from . import rt
-from . import context
+from . import context, rt
 
 
 def createCamera() -> rt.Camera:
