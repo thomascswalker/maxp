@@ -36,7 +36,7 @@ def isClass(node: rt.Node, type: Union[str, Any]) -> bool:
     if isinstance(type, str):
         type = rt.Execute(type)
 
-    return rt.ClassOf(node, type)
+    return rt.ClassOf(node) == type
 
 
 def isSubClass(node: rt.Node, type: Union[str, Any]) -> bool:

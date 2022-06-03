@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.12
+- Add simple logging
+- Update GameExporter to launch
+- Rename GameExporterWindow to GameExporter
+- Resolve isClass bug
+- Resolve AutoWindow.readSettings move type
+
 ## 0.1.11
 - Update GameExporter to match new package structure
 - Update imports to not be relative

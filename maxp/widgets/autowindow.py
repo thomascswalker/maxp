@@ -4,7 +4,7 @@ import os
 from typing import Any, Callable, List
 
 # Qt
-from PySide2.QtCore import QEvent, QFile, QObject, QSettings, QSize, Signal
+from PySide2.QtCore import QEvent, QFile, QObject, QSettings, QSize, Signal, QPoint
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow, QWidget
 
@@ -196,7 +196,7 @@ class AutoWindow(QMainWindow):
     # Override
     def closeEvent(self, event: QEvent) -> None:
         self.writeSettings()
-        self.deleteCallbacks()
+        self.removeCallbacks()
         for handler in reversed(self._handlers):
             handler.unbind()
         super().closeEvent(event)
@@ -250,7 +250,7 @@ class AutoWindow(QMainWindow):
                 dialog.close()
 
     def readSettings(self) -> None:
-        pos = self._settings.value("pos", QSize(0, 0))
+        pos = self._settings.value("pos", QPoint(0, 0))
         self.move(pos)  # type: ignore
 
         size = self._settings.value("size", QSize(640, 480))
@@ -265,5 +265,5 @@ class AutoWindow(QMainWindow):
         pass
 
     @abc.abstractmethod
-    def deleteCallbacks(self) -> None:
+    def removeCallbacks(self) -> None:
         pass

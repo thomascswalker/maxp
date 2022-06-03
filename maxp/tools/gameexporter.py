@@ -1,78 +1,93 @@
+"""
+Game exporter similar to the built-in 3ds Max one. This window has more controls
+and options for batch exporting and performing certain operations while exporting.
+"""
+
 # Standard
+import logging
 from typing import List
+
+import pymxs
 
 # Qt
 from PySide2.QtWidgets import QFileDialog
-from maxp import fileio
 
 # Package
+from maxp import fileio, rt, MAX_HWND, callbacks, scene
+from maxp.logger import log
 from maxp.widgets.autowindow import AutoWindow
-from maxp import callbacks, scene
 from maxp.callbacks import GeneralEvent
+from maxp.context import origin
 
 
-class GameExporterWindow(AutoWindow):
-    _modelQueue: List = []
+class GameExporter(AutoWindow):
+    _modelQueue: List[rt.Node] = []
 
-    def __init__(self, parent=None):
-        super().__init__("Game Exporter", parent=parent, uiFile="gameexporter")
-        self.setup_connections()
-        self.populate_models_list()
+    def __init__(self):
+        super().__init__("Game Exporter", parent=MAX_HWND, uiFileName="gameexporter")
+        self.setupConnections()
+        self.updateModelQueue()
 
-    def setup_connections(self) -> None:
-        self.ui.exportSelected.toggled.connect(self.on_export_selected_checked)
-        self.ui.exploreOutput.clicked.connect(self.on_explore_output_clicked)
-        self.ui.exportModels.clicked.connect(self.export_models)
+    def setupConnections(self) -> None:
+        log("Setting connections")
+        self.ui.exportSelected.toggled.connect(self.updateModelQueue)
+        self.ui.exploreOutput.clicked.connect(self.exploreOutput)
+        self.ui.exportModels.clicked.connect(self.exportQueue)
 
-    def add_callbacks(self) -> None:
-        super().add_callbacks()
+    def addCallbacks(self) -> None:
+        log("Adding callbacks")
+        super().addCallbacks()
         callbacks.add(
             GeneralEvent.selectionSetChanged,
-            self.populate_models_list,
+            self.updateModelQueue,
             id="GameExporter",
         )
 
-    def delete_callbacks(self) -> None:
-        super().delete_callbacks()
+    def removeCallbacks(self) -> None:
+        log("Removing callbacks")
+        super().removeCallbacks()
         callbacks.remove(
             GeneralEvent.selectionSetChanged,
             id="GameExporter",
         )
 
-    def on_explore_output_clicked(self):
+    def exploreOutput(self):
+        log("Exploring output")
         output = QFileDialog.getExistingDirectory(self, "Select output directory")
-        self.ui.filePath.setText(output)
+        if output != "":
+            log(f"Setting output path to {output}")
+            self.ui.filePath.setText(output)
+        else:
+            log(f"No output selected", level=logging.WARNING)
 
-    def on_export_selected_checked(self, state: bool) -> None:
-        self.populate_models_list()
-
-    def populate_models_list(self) -> None:
-        self.ui.modelList.clear()
-        self._modelQueue = []
-
-        nodes = scene.getNodes(selected=self.ui.exportSelected.isChecked())
+    def updateModelQueue(self) -> None:
+        self.clearQueue()
+        log(f"Updating model queue")
+        selected = self.ui.exportSelected.isChecked()
+        nodes = scene.getNodes(selected=selected)
         for node in nodes:
+            log(f"Adding model {node.name}", indent=1)
             self.ui.modelList.addItem(node.name)
             self._modelQueue.append(node)
 
-    def get_up_axis(self):
-        upAxis = self.ui.upAxis.currentIndex()
+    def clearQueue(self) -> None:
+        log(f"Clearing model queue")
+        self._modelQueue = []
+        self.ui.modelList.clear()
 
-        if upAxis == 0:
-            return "Y"
-
-        return "Z"
-
-    def export_models(self):
-        # upAxis = self.get_up_axis()
-        # origin = self.ui.moveToOrigin.isChecked()
+    def exportQueue(self):
         path = self.ui.filePath.text()
-        # prefix = self.ui.filePrefix.text()
-
-        for model in self._modelQueue:
-            fileio.exportNode(model, path, ".fbx")
+        log(f"Exporting model queue at {path}")
+        for node in self._modelQueue:
+            with origin(node):
+                log(f"Moving model {node.name} to origin", indent=1)
+                with pymxs.redraw(False):
+                    log(f"Disabling redraw", indent=1)
+                    log(f"Exporting model {node.name}", indent=1)
+                    filename = fileio.exportNode(node, path, ".fbx")
+                    log(f"Output model to {filename}", indent=1)
 
 
 if __name__ == "__main__":
-    w = GameExporterWindow()
+    w = GameExporter()
     w.show()
