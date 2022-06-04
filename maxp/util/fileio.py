@@ -1,9 +1,12 @@
+# Standard
 import inspect
 import os
 from typing import List
 
-from maxp import rt, scene
-from maxp.exceptions import InvalidNodeError
+# Package
+from maxp import rt
+from maxp.util import scene
+from maxp.util.exceptions import InvalidNodeError
 
 
 def relative(filename: str) -> str:

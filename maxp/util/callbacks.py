@@ -1,8 +1,11 @@
+# Standard
 from __future__ import annotations
 
 from typing import Callable, List, Union
 
-from maxp import scene, rt
+# Package
+from maxp import rt
+from maxp.util import scene
 
 global HANDLERS
 HANDLERS: List[When] = []

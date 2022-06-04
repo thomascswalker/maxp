@@ -1,11 +1,10 @@
 # Standard
-from collections import namedtuple
 import re
+from collections import namedtuple
 from typing import Callable, List
 
 # Package
 from maxp import rt
-from maxp.tools import gameexporter
 
 # Defines a wrapper for MacroScript properties
 Macro = namedtuple(
@@ -56,14 +55,3 @@ def addMacro(
     {func}()
     """
     rt.Macros.new(category, action, tooltip, title, mxs)
-
-
-def test_addMacro():
-    addMacro(
-        "GameExporter",
-        gameexporter.__package__,
-        "Game Exporter",
-        gameexporter.__doc__,
-        gameexporter.launch,
-    )
-    assert isMacroDefined("GameExporter", "maxp")

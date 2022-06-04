@@ -7,7 +7,7 @@ but handle Python typing.
 from cmath import isclose
 from typing import Any, List, Union
 
-# Internal
+# Package
 from maxp import MXSWrapperBase, rt
 
 
