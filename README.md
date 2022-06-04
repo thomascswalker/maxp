@@ -1,7 +1,7 @@
 # maxp
 
 ## Requirements
-This package is intended for use with _***3ds Max 2022 and above***_.
+This package is only intended and developed for use with _***3ds Max 2021 and above***_.
 
 ## Installation
 
@@ -15,7 +15,7 @@ View package on [PyPi](https://pypi.org/project/maxp/).
 ### In 3ds Max
 
 1. Download and run `install.bat` found in the root of this repository.
-2. Enter the 3ds Max version you wish to install.
+2. This will install in any version of 3ds Max which is compatible.
 
 ## Examples
 
