@@ -88,6 +88,10 @@ class GameExporter(AutoWindow):
                     log(f"Output model to {filename}", indent=1)
 
 
-if __name__ == "__main__":
+def launch() -> None:
     w = GameExporter()
     w.show()
+
+
+if __name__ == "__main__":
+    launch()
