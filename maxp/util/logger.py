@@ -1,14 +1,19 @@
-from datetime import datetime
+# Standard
+import inspect
 import logging
 import os
-import inspect
+from datetime import datetime
 
+# Globals
 LOGGER = logging.Logger("maxp")
-LOGGER_FILENAME = os.path.join(os.getenv("temp"), "maxp.log")
+TEMP = os.getenv("temp")
+if TEMP is None:
+    raise
+LOGGER_FILENAME = os.path.join(TEMP, "maxp.log")
 LOGGER.addHandler(logging.FileHandler(LOGGER_FILENAME))
 
 
-def log(msg: str, level: int = logging.INFO, indent: int = 0) -> None:
+def log(msg: str, level: int = logging.INFO, indentLevel: int = 0) -> None:
     # Get the execution stack and determine if we executed from a class
     # or from a standalone method.
     stack = inspect.stack()
@@ -25,7 +30,7 @@ def log(msg: str, level: int = logging.INFO, indent: int = 0) -> None:
     name = f"[{name}]"
 
     # Calculate indent
-    indent = " " * indent * 4 if indent > 0 else ""
+    indent: str = " " * indentLevel * 4 if indentLevel > 0 else ""
 
     # Log to the file
     LOGGER.log(level, " ".join([now, name, indent, msg]))

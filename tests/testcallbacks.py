@@ -1,5 +1,6 @@
-from .testcallbacks import callbacks, rt, scene
 from maxp.callbacks import GeneralEvent
+
+from .testcallbacks import callbacks, rt, scene
 
 
 def test_addCallback() -> bool:

@@ -7,17 +7,16 @@ and options for batch exporting and performing certain operations while exportin
 import logging
 from typing import List
 
-import pymxs
-
 # Qt
 from PySide2.QtWidgets import QFileDialog
 
 # Package
-from maxp import fileio, rt, MAX_HWND, callbacks, scene
-from maxp.logger import log
+from maxp import MAX_HWND, pymxs, rt
+from maxp.util import callbacks, fileio, macros, scene
+from maxp.util.callbacks import GeneralEvent
+from maxp.util.context import origin
+from maxp.util.logger import log
 from maxp.widgets.autowindow import AutoWindow
-from maxp.callbacks import GeneralEvent
-from maxp.context import origin
 
 
 class GameExporter(AutoWindow):
@@ -66,7 +65,7 @@ class GameExporter(AutoWindow):
         selected = self.ui.exportSelected.isChecked()
         nodes = scene.getNodes(selected=selected)
         for node in nodes:
-            log(f"Adding model {node.name}", indent=1)
+            log(f"Adding model {node.name}", indentLevel=1)
             self.ui.modelList.addItem(node.name)
             self._modelQueue.append(node)
 
@@ -88,6 +87,21 @@ class GameExporter(AutoWindow):
                     log(f"Output model to {filename}", indent=1)
 
 
-if __name__ == "__main__":
+def launch() -> None:
     w = GameExporter()
     w.show()
+
+
+def test_addMacro():
+    macros.addMacro(
+        "GameExporter",
+        __file__.__package__,
+        "Game Exporter",
+        __file__.__doc__,
+        launch,
+    )
+    assert macros.isMacroDefined("GameExporter", "maxp")
+
+
+if __name__ == "__main__":
+    launch()

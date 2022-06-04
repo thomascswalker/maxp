@@ -1,7 +1,7 @@
 # Standard
 import math
 
-# maxp
+# Package
 from maxp import rt
 
 

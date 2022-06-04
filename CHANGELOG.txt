@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.13
+- Move most modules into util dir
+- Update logging to fix mypy errors
+- Add better mypy compatibility
+
 ## 0.1.12
 - Add simple logging
 - Update GameExporter to launch

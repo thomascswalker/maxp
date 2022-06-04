@@ -1,5 +1,6 @@
 import os
-from ..maxp import rt, fileio, context, scene
+
+from ..maxp import context, fileio, rt, scene
 
 
 def test_originExport():

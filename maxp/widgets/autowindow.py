@@ -4,12 +4,13 @@ import os
 from typing import Any, Callable, List
 
 # Qt
-from PySide2.QtCore import QEvent, QFile, QObject, QSettings, QSize, Signal, QPoint
+from PySide2.QtCore import QEvent, QFile, QObject, QPoint, QSettings, QSize, Signal
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow, QWidget
 
 # Internal
-from maxp import MAX_HWND, fileio, rt
+from maxp import MAX_HWND, rt
+from maxp.util import fileio
 
 # Globals
 global HANDLERS

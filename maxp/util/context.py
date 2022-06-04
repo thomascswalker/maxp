@@ -2,7 +2,7 @@
 from contextlib import contextmanager
 from typing import Iterator
 
-# 3ds Max
+# Package
 from maxp import rt
 
 COORD_SPACES = [

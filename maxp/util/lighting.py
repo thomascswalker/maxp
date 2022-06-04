@@ -1,4 +1,6 @@
-from maxp import fileio, rt
+# Package
+from maxp import rt
+from maxp.util import fileio
 
 LIGHT_DOME_NAME = "_Dome"
 LIGHT_ACCENT_BACK_NAME = "_AccentBack"

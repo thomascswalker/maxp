@@ -1,0 +1,1 @@
+mypy -p maxp
